@@ -25,48 +25,17 @@
 
 ## 🚀 快速开始
 
-### 一键安装（支持交互菜单）
+### 一键安装
 
 ```bash
-# 使用 curl（推荐）
+# 交互式安装（推荐）
 bash <(curl -fsSL https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh)
 
-# 或使用 wget
-bash <(wget -qO- https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh)
+# 快速安装（跳过菜单）
+bash <(curl -fsSL https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh) install
 ```
 
 > ⚠️ **安全提醒**: 请在执行任何脚本前先查看其内容，确保来源可信。
-
-### 国内用户（使用镜像）
-
-```bash
-# 使用 ghproxy.com 镜像
-bash <(curl -fsSL https://ghproxy.com/https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh)
-```
-
-### 备用方法（如果上述方法不工作）
-
-```bash
-# 先下载脚本
-curl -O https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh
-
-# 添加执行权限
-chmod +x reality-hysteria2.sh
-
-# 运行脚本
-./reality-hysteria2.sh
-```
-
-### 快速安装（使用默认配置）
-
-```bash
-# 下载脚本
-wget -O reality-hysteria2.sh https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh
-chmod +x reality-hysteria2.sh
-
-# 直接安装（跳过菜单）
-./reality-hysteria2.sh install
-```
 
 ## 📖 使用说明
 
@@ -154,67 +123,32 @@ bash reality-hysteria2.sh
 
 > 📝 **注意**: 请使用支持 REALITY 和 Hysteria2 的最新版本客户端
 
-### 导入方式
+### 导入配置
 
-1. **URI 导入**：复制脚本生成的 URI，在客户端中导入
-2. **手动配置**：使用脚本显示的参数手动配置
-3. **订阅方式**：可以将 URI 转换为订阅链接
-
-### 配置步骤
-
-1. **获取配置**: 使用 `proxy-manager info` 查看配置
-2. **选择客户端**: 根据您的平台选择合适的客户端
-3. **导入配置**: 使用 URI 直接导入或手动填写参数
-4. **测试连接**: 检查连接是否正常
+1. 获取配置：`proxy-manager info`
+2. 复制 URI 到客户端导入
+3. 测试连接
 
 ## 🔍 故障排查
 
-### Reality 无法连接
+### 基本检查
 ```bash
-# 检查服务状态
+# 服务状态
 proxy-manager status
 
-# 检查端口
-ss -tlnp | grep 443
-
-# 查看实时日志
-proxy-manager log xray
-```
-
-### Hysteria2 无法连接
-```bash
-# 检查 UDP 端口
-ss -ulnp | grep 8443
-
 # 查看日志
-proxy-manager log hysteria
+proxy-manager log xray      # REALITY
+proxy-manager log hysteria  # Hysteria2
 
-# 检查证书（如果使用域名）
-ls -la /etc/proxy-server/certs/
+# 检查端口
+ss -tlnp | grep 443   # TCP
+ss -ulnp | grep 8443  # UDP
 ```
 
 ### 常见问题
-
-1. **端口被占用**
-   ```bash
-   # 查看占用端口的进程
-   lsof -i:443
-   # 修改默认端口重新安装
-   REALITY_PORT=8443 bash reality-hysteria2.sh install
-   ```
-
-2. **时间不同步**
-   ```bash
-   # 同步时间
-   timedatectl set-ntp true
-   ```
-
-3. **防火墙问题**
-   ```bash
-   # 开放端口
-   ufw allow 443/tcp
-   ufw allow 8443/udp
-   ```
+- **端口占用**: `lsof -i:443` 检查，或修改端口 `REALITY_PORT=8443`
+- **时间不同步**: `timedatectl set-ntp true`
+- **防火墙**: `ufw allow 443/tcp && ufw allow 8443/udp`
 
 ## 🔄 更新与卸载
 
@@ -256,13 +190,7 @@ MIT License
 
 ## ⚠️ 免责声明
 
-本项目仅供学习和研究使用。使用者应遵守当地法律法规，不得用于非法用途。作者不承担任何使用风险和法律责任。
-
-### 使用注意事项
-- 请在执行脚本前仔细阅读其内容
-- 建议在测试环境中先进行验证
-- 保持系统和软件的最新版本
-- 定期备份重要数据
+本项目仅供学习研究使用。使用者应遵守当地法律法规，作者不承担任何使用风险和法律责任。
 
 ---
 
