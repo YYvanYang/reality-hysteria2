@@ -57,9 +57,9 @@ install_base() {
     echo -e "${YELLOW}安装基础工具...${CLEAR}"
     if [[ "$OS" == "ubuntu" ]] || [[ "$OS" == "debian" ]]; then
         apt update -y >/dev/null 2>&1
-        apt install -y curl wget unzip openssl jq >/dev/null 2>&1
+        apt install -y curl wget unzip openssl >/dev/null 2>&1
     elif [[ "$OS" == "centos" ]] || [[ "$OS" == "fedora" ]]; then
-        yum install -y curl wget unzip openssl jq >/dev/null 2>&1
+        yum install -y curl wget unzip openssl >/dev/null 2>&1
     fi
     echo -e "${GREEN}✓ 基础工具安装完成${CLEAR}"
 }
@@ -116,12 +116,18 @@ cd /etc/proxy-server
 # 检测架构
 ARCH=$(uname -m)
 case $ARCH in
-    x86_64) ARCH_TYPE="amd64" ;;
-    aarch64) ARCH_TYPE="arm64" ;;
+    x86_64) 
+        XRAY_ARCH="64"
+        HY_ARCH="amd64"
+        ;;
+    aarch64) 
+        XRAY_ARCH="arm64-v8a"
+        HY_ARCH="arm64"
+        ;;
     *) echo -e "${RED}不支持的架构: $ARCH${CLEAR}"; exit 1 ;;
 esac
 
-echo -e "${GREEN}系统架构: $ARCH_TYPE${CLEAR}"
+echo -e "${GREEN}系统架构: $ARCH (xray: $XRAY_ARCH, hysteria: $HY_ARCH)${CLEAR}"
 echo ""
 
 # 获取配置参数并验证
@@ -152,13 +158,13 @@ echo ""
 
 # 下载和验证 xray
 echo -e "${YELLOW}下载 xray-core...${CLEAR}"
-XRAY_VERSION=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | jq -r .tag_name)
+XRAY_VERSION=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep -o '"tag_name": "[^"]*"' | cut -d'"' -f4)
 if [ -z "$XRAY_VERSION" ] || [ "$XRAY_VERSION" = "null" ]; then
     echo -e "${RED}获取 xray 版本信息失败${CLEAR}"
     exit 1
 fi
 
-wget -q --show-progress "https://github.com/XTLS/Xray-core/releases/download/${XRAY_VERSION}/Xray-linux-${ARCH_TYPE}.zip" -O xray.zip
+wget -q --show-progress "https://github.com/XTLS/Xray-core/releases/download/${XRAY_VERSION}/Xray-linux-${XRAY_ARCH}.zip" -O xray.zip
 if [ ! -s "xray.zip" ]; then
     echo -e "${RED}xray 下载失败${CLEAR}"
     exit 1
@@ -174,13 +180,13 @@ echo -e "${GREEN}✓ xray-core ${XRAY_VERSION} 安装完成${CLEAR}"
 
 # 下载和验证 hysteria
 echo -e "${YELLOW}下载 Hysteria2...${CLEAR}"
-HY_VERSION=$(curl -s https://api.github.com/repos/apernet/hysteria/releases/latest | jq -r .tag_name)
+HY_VERSION=$(curl -s https://api.github.com/repos/apernet/hysteria/releases/latest | grep -o '"tag_name": "[^"]*"' | cut -d'"' -f4)
 if [ -z "$HY_VERSION" ] || [ "$HY_VERSION" = "null" ]; then
     echo -e "${RED}获取 Hysteria2 版本信息失败${CLEAR}"
     exit 1
 fi
 
-wget -q --show-progress "https://github.com/apernet/hysteria/releases/download/${HY_VERSION}/hysteria-linux-${ARCH_TYPE}" -O hysteria/hysteria
+wget -q --show-progress "https://github.com/apernet/hysteria/releases/download/${HY_VERSION}/hysteria-linux-${HY_ARCH}" -O hysteria/hysteria
 if [ ! -s "hysteria/hysteria" ]; then
     echo -e "${RED}Hysteria2 下载失败${CLEAR}"
     exit 1
