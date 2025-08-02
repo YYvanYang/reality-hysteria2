@@ -396,6 +396,15 @@ done
 # 获取 IP
 SERVER_IP=$(curl -s4 https://api.ipify.org || curl -s4 ifconfig.me)
 
+# 确定 Hysteria2 连接地址
+if [ -n "$DOMAIN" ]; then
+    HY_SERVER=$DOMAIN
+    HY_TAG="Hysteria2-${DOMAIN}"
+else
+    HY_SERVER=$SERVER_IP
+    HY_TAG="Hysteria2-${SERVER_IP}"
+fi
+
 # 生成客户端信息
 cat > /etc/proxy-server/client-info.txt <<EOF
 ========================================
@@ -403,6 +412,7 @@ cat > /etc/proxy-server/client-info.txt <<EOF
 ========================================
 
 服务器 IP: $SERVER_IP
+$([ -n "$DOMAIN" ] && echo "域名: $DOMAIN")
 
 ----- VLESS REALITY -----
 端口: $REALITY_PORT
@@ -416,8 +426,9 @@ vless://${UUID}@${SERVER_IP}:${REALITY_PORT}?encryption=none&flow=xtls-rprx-visi
 ----- Hysteria2 -----
 端口: $HYSTERIA_PORT
 密码: $HY_PASSWORD
+$([ -n "$DOMAIN" ] && echo "域名: $DOMAIN")
 
-hysteria2://${HY_PASSWORD}@${SERVER_IP}:${HYSTERIA_PORT}/?sni=${DOMAIN:-bing.com}$([ -z "$DOMAIN" ] && echo "&insecure=1")\#Hysteria2-${SERVER_IP}
+hysteria2://${HY_PASSWORD}@${HY_SERVER}:${HYSTERIA_PORT}/?sni=${DOMAIN:-bing.com}$([ -z "$DOMAIN" ] && echo "&insecure=1")\#${HY_TAG}
 
 ========================================
 EOF
