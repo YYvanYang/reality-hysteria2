@@ -29,10 +29,10 @@
 
 ```bash
 # 使用 curl（推荐）
-bash <(curl -fsSL https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh)
 
 # 或使用 wget
-bash <(wget -qO- https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh)
+bash <(wget -qO- https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh)
 ```
 
 > ⚠️ **安全提醒**: 请在执行任何脚本前先查看其内容，确保来源可信。
@@ -41,14 +41,14 @@ bash <(wget -qO- https://raw.githubusercontent.com/YYvanYangCalled/reality-hyste
 
 ```bash
 # 使用 ghproxy.com 镜像
-bash <(curl -fsSL https://ghproxy.com/https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh)
+bash <(curl -fsSL https://ghproxy.com/https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh)
 ```
 
 ### 备用方法（如果上述方法不工作）
 
 ```bash
 # 先下载脚本
-curl -O https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh
+curl -O https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh
 
 # 添加执行权限
 chmod +x reality-hysteria2.sh
@@ -61,7 +61,7 @@ chmod +x reality-hysteria2.sh
 
 ```bash
 # 下载脚本
-wget -O reality-hysteria2.sh https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh
+wget -O reality-hysteria2.sh https://raw.githubusercontent.com/YYvanYang/reality-hysteria2/main/reality-hysteria2.sh
 chmod +x reality-hysteria2.sh
 
 # 直接安装（跳过菜单）
@@ -266,4 +266,4 @@ MIT License
 
 ---
 
-**提示**：遇到问题请先查看 [Wiki](https://github.com/YYvanYangCalled/reality-hysteria2/wiki) 或提交 [Issue](https://github.com/YYvanYangCalled/reality-hysteria2/issues)
+**提示**：遇到问题请先查看 [Wiki](https://github.com/YYvanYang/reality-hysteria2/wiki) 或提交 [Issue](https://github.com/YYvanYang/reality-hysteria2/issues)
