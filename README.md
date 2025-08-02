@@ -10,39 +10,62 @@
 - 🛠️ **一键部署**：自动检测系统、安装依赖、优化配置
 - 📊 **智能管理**：内置管理命令，轻松查看状态和日志
 - 🔧 **自动优化**：BBR、系统参数自动优化
+- 🔐 **安全防护**：自动文件权限设置和输入验证
+- 🔄 **智能检测**：自动下载验证和服务状态检查
 
 ## 📋 系统要求
 
-- 系统：Ubuntu 20.04+, Debian 10+, CentOS 7+
-- 架构：x86_64, ARM64
-- 内存：建议 512MB 以上
-- 权限：需要 root 权限
+- **操作系统**: Ubuntu 20.04+, Debian 10+, CentOS 7+
+- **架构**: x86_64, ARM64
+- **内存**: 建议 512MB 以上
+- **磁盘空间**: 最少 1GB 可用空间
+- **网络**: 公网 IP 地址（IPv4 或 IPv6）
+- **端口**: 需要开放指定端口（默认 443 和 8443）
+- **权限**: Root 用户或 sudo 权限
 
 ## 🚀 快速开始
 
-### 一键安装
+### 一键安装（支持交互菜单）
 
 ```bash
-wget -N --no-check-certificate https://raw.githubusercontent.com/yourusername/proxy-installer/main/reality-hysteria2.sh && bash reality-hysteria2.sh
+# 使用 curl（推荐）
+bash <(curl -fsSL https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh)
+
+# 或使用 wget
+bash <(wget -qO- https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh)
 ```
 
-或者使用 curl：
+> ⚠️ **安全提醒**: 请在执行任何脚本前先查看其内容，确保来源可信。
+
+### 国内用户（使用镜像）
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/proxy-installer/main/reality-hysteria2.sh | sudo bash
+# 使用 ghproxy.com 镜像
+bash <(curl -fsSL https://ghproxy.com/https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh)
 ```
 
-### 安装选项
+### 备用方法（如果上述方法不工作）
 
-安装时会提示输入以下信息：
-- **Reality 端口**（默认: 443）
-- **Hysteria2 端口**（默认: 8443）
-- **域名**（可选，留空使用自签名证书）
+```bash
+# 先下载脚本
+curl -O https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh
+
+# 添加执行权限
+chmod +x reality-hysteria2.sh
+
+# 运行脚本
+./reality-hysteria2.sh
+```
 
 ### 快速安装（使用默认配置）
 
 ```bash
-bash reality-hysteria2.sh install
+# 下载脚本
+wget -O reality-hysteria2.sh https://raw.githubusercontent.com/YYvanYangCalled/reality-hysteria2/main/reality-hysteria2.sh
+chmod +x reality-hysteria2.sh
+
+# 直接安装（跳过菜单）
+./reality-hysteria2.sh install
 ```
 
 ## 📖 使用说明
@@ -115,11 +138,21 @@ bash reality-hysteria2.sh
 
 ### 支持的客户端
 
-**Windows**: v2rayN, nekoray, Clash.Meta  
-**Android**: v2rayNG, Matsuri, SFA  
-**iOS**: Shadowrocket, Stash  
-**macOS**: v2rayU, Qv2ray  
-**Linux**: sing-box, xray-core
+#### VLESS REALITY 客户端
+- **v2rayN** (Windows)
+- **v2rayNG** (Android) 
+- **FoXray** (iOS)
+- **Qv2ray** (Linux/macOS)
+- **Xray-core** (命令行)
+
+#### Hysteria2 客户端
+- **Clash Meta** (跨平台)
+- **sing-box** (跨平台)
+- **NekoBox** (Android)
+- **Hiddify** (iOS/Android)
+- **Hysteria** (命令行)
+
+> 📝 **注意**: 请使用支持 REALITY 和 Hysteria2 的最新版本客户端
 
 ### 导入方式
 
@@ -127,20 +160,25 @@ bash reality-hysteria2.sh
 2. **手动配置**：使用脚本显示的参数手动配置
 3. **订阅方式**：可以将 URI 转换为订阅链接
 
-详细配置说明请参考 [客户端配置指南](./client-configs.md)
+### 配置步骤
+
+1. **获取配置**: 使用 `proxy-manager info` 查看配置
+2. **选择客户端**: 根据您的平台选择合适的客户端
+3. **导入配置**: 使用 URI 直接导入或手动填写参数
+4. **测试连接**: 检查连接是否正常
 
 ## 🔍 故障排查
 
 ### Reality 无法连接
 ```bash
 # 检查服务状态
-systemctl status xray-reality
+proxy-manager status
 
 # 检查端口
 ss -tlnp | grep 443
 
-# 查看日志
-journalctl -u xray-reality -e
+# 查看实时日志
+proxy-manager log xray
 ```
 
 ### Hysteria2 无法连接
@@ -148,11 +186,11 @@ journalctl -u xray-reality -e
 # 检查 UDP 端口
 ss -ulnp | grep 8443
 
+# 查看日志
+proxy-manager log hysteria
+
 # 检查证书（如果使用域名）
 ls -la /etc/proxy-server/certs/
-
-# 测试 UDP 连通性
-nc -u -v 服务器IP 8443
 ```
 
 ### 常见问题
@@ -194,9 +232,11 @@ bash reality-hysteria2.sh uninstall
 ## 🛡️ 安全建议
 
 1. **定期更新**：保持 xray-core 和 hysteria 最新版本
-2. **修改默认端口**：避免使用 443 等常见端口
-3. **限制访问**：可以配置防火墙限制来源 IP
-4. **监控日志**：定期检查异常访问
+2. **防火墙设置**：仅开放必要端口，限制访问来源
+3. **密码管理**：使用强密码和定期更换 UUID/密码
+4. **监控日志**：定期检查异常访问和攻击记录
+5. **系统加固**：禁用不必要的服务，定期更新系统
+6. **备份配置**：定期备份配置文件
 
 ## 📊 性能优化
 
@@ -216,8 +256,14 @@ MIT License
 
 ## ⚠️ 免责声明
 
-本脚本仅供学习交流使用，请遵守当地法律法规。
+本项目仅供学习和研究使用。使用者应遵守当地法律法规，不得用于非法用途。作者不承担任何使用风险和法律责任。
+
+### 使用注意事项
+- 请在执行脚本前仔细阅读其内容
+- 建议在测试环境中先进行验证
+- 保持系统和软件的最新版本
+- 定期备份重要数据
 
 ---
 
-**提示**：遇到问题请先查看 [Wiki](https://github.com/yourusername/proxy-installer/wiki) 或提交 [Issue](https://github.com/yourusername/proxy-installer/issues)
+**提示**：遇到问题请先查看 [Wiki](https://github.com/YYvanYangCalled/reality-hysteria2/wiki) 或提交 [Issue](https://github.com/YYvanYangCalled/reality-hysteria2/issues)
