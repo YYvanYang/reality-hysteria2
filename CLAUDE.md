@@ -305,3 +305,72 @@ yq . /etc/proxy-server/hysteria/config.yaml >/dev/null # Valid YAML (if yq avail
 - Complete lifecycle management through `proxy-manager`
 - Atomic install/uninstall operations
 - Status validation at each deployment step
+
+## Common Issues and Troubleshooting
+
+### Hysteria2 Connection Issues
+
+**Issue**: Client shows "跳过测试" (skip test) or connection failed
+
+**Root Causes and Solutions**:
+
+1. **URI Generation Problems** (Fixed in recent commits):
+   - **Problem**: Script was generating URIs with domain in address field but IP needed for connection
+   - **Solution**: Client should use IP address for connection, domain for SNI only
+   - **Correct format**: `hysteria2://password@IP:8443/?sni=domain.com#tag`
+   - **Wrong format**: `hysteria2://password@domain.com:8443/?sni=domain.com#tag`
+
+2. **Escaped Character in URI**:
+   - **Problem**: Shell escaping caused `\#` instead of `#` in URIs
+   - **Solution**: Remove backslash escape in heredoc: `\#` → `#`
+
+3. **Certificate vs Connection Address Mismatch**:
+   - **Server side**: Uses domain for ACME certificates
+   - **Client side**: Must connect to IP but use domain for SNI
+   - **Key insight**: ACME certificates work with IP connections if SNI matches domain
+
+### Binary Download Failures
+
+**Issue**: "xray 下载失败" during installation
+
+**Root Causes**:
+- **Architecture mapping mismatch**: Script mapped `x86_64` → `amd64` but Xray releases use `64`
+- **GitHub API dependency**: Required `jq` but should use basic text processing
+
+**Solutions Applied**:
+- Fixed architecture mapping: `x86_64` → `64`, `aarch64` → `arm64-v8a`
+- Removed `jq` dependency, use `grep | cut` for JSON parsing
+- Separate architecture variables for different projects: `XRAY_ARCH` vs `HY_ARCH`
+
+### Architecture-Specific Download URLs
+
+**Xray-core releases**:
+- x86_64: `Xray-linux-64.zip`
+- aarch64: `Xray-linux-arm64-v8a.zip`
+
+**Hysteria releases**:
+- x86_64: `hysteria-linux-amd64`
+- aarch64: `hysteria-linux-arm64`
+
+### Client Configuration Best Practices
+
+**v2rayN Hysteria2 Configuration**:
+- **地址 (address)**: Use server IP address
+- **端口 (port)**: 8443 (UDP)
+- **密码 (password)**: Base64-encoded from server
+- **SNI**: Use domain name (if ACME enabled)
+- **跳过证书验证**: Set to `false` for ACME certificates
+
+**Connection Flow**:
+1. Client connects to IP:8443 (UDP)
+2. TLS handshake uses SNI=domain.com
+3. Server validates with Let's Encrypt certificate
+4. QUIC connection established
+
+### Debugging Workflow
+
+1. **Check service status**: `systemctl status xray-reality hysteria2`
+2. **Verify ports**: `ss -tlnp | grep 443` and `ss -ulnp | grep 8443`
+3. **Monitor connections**: `journalctl -u hysteria2 -f` during client test
+4. **Validate certificates**: Check ACME log for successful certificate acquisition
+5. **Test connectivity**: Use official Hysteria2 client for verification
